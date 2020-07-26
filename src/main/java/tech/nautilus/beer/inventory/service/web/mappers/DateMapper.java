@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package guru.sfg.beer.inventory.service.web.mappers;
+package tech.nautilus.beer.inventory.service.web.mappers;
 
 import org.springframework.stereotype.Component;
 

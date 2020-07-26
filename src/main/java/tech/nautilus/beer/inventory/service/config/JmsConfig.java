@@ -1,4 +1,4 @@
-package guru.sfg.beer.inventory.service.config;
+package tech.nautilus.beer.inventory.service.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
