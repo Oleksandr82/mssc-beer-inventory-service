@@ -1,4 +1,4 @@
-package tech.nautilus.beer.inventory.service.web.model;
+package tech.nautilus.brewery.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

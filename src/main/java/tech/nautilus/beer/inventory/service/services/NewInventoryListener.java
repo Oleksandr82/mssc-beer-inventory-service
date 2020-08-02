@@ -6,7 +6,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import tech.nautilus.beer.inventory.service.domain.BeerInventory;
 import tech.nautilus.beer.inventory.service.repositories.BeerInventoryRepository;
-import tech.nautilus.brewery.events.NewInventoryEvent;
+import tech.nautilus.brewery.model.events.NewInventoryEvent;
 
 import static tech.nautilus.beer.inventory.service.config.JmsConfig.NEW_INVENTORY_QUEUE;
 

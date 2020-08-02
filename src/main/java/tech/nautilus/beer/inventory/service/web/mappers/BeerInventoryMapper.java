@@ -1,7 +1,7 @@
 package tech.nautilus.beer.inventory.service.web.mappers;
 
 import tech.nautilus.beer.inventory.service.domain.BeerInventory;
-import tech.nautilus.beer.inventory.service.web.model.BeerInventoryDto;
+import tech.nautilus.brewery.model.BeerInventoryDto;
 import org.mapstruct.Mapper;
 
 /**

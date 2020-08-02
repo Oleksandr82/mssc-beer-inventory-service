@@ -1,4 +1,4 @@
-package tech.nautilus.brewery.events;
+package tech.nautilus.brewery.model.events;
 
 import lombok.NoArgsConstructor;
 import tech.nautilus.brewery.model.BeerDto;
