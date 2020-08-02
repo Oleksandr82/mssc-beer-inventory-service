@@ -10,6 +10,8 @@ import org.springframework.jms.support.converter.MessageType;
 @Configuration
 public class JmsConfig {
 
+    public static final String NEW_INVENTORY_QUEUE = "new-inventory-request";
+
     public final static String TYPE_PROP_NAME = "_type";
 
     @Bean
