@@ -24,7 +24,8 @@ public class AllocationListener {
 
         try {
             Boolean allocationResult = allocationService.allocateOrder(allocateOrderRequest.getBeerOrderDto());
-            builder.pendingInventory(allocationResult);
+            builder.pendingInventory(!allocationResult);
+            builder.allocationError(false);
             log.debug("Result of the order allocation is: {}", allocationResult);
         } catch (Exception ex) {
             log.debug("An exception was thrown during order allocation: {}", ex);
