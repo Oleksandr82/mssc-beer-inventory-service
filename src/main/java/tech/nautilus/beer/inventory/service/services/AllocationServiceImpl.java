@@ -23,14 +23,14 @@ public class AllocationServiceImpl implements AllocationService {
     public Boolean allocateOrder(BeerOrderDto beerOrderDto) {
         log.debug("Allocating Order: {}", beerOrderDto.getId());
 
-        AtomicInteger totalOrdered = new AtomicInteger();
-        AtomicInteger totalAllocated = new AtomicInteger();
+        AtomicInteger totalOrdered = new AtomicInteger(0);
+        AtomicInteger totalAllocated = new AtomicInteger(0);
 
         beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
             Integer orderQuantity = Optional.ofNullable(beerOrderLineDto.getOrderQuantity()).orElse(0);
             Integer allocatedQuantity = Optional.ofNullable(beerOrderLineDto.getQuantityAllocated()).orElse(0);
             if (orderQuantity - allocatedQuantity > 0) {
-                allocateBeerOrderLine(beerOrderLineDto);
+                allocatedQuantity = allocateBeerOrderLine(beerOrderLineDto);
             }
             totalOrdered.set(totalOrdered.get() + orderQuantity);
             totalAllocated.set(totalAllocated.get() + allocatedQuantity);
@@ -58,34 +58,44 @@ public class AllocationServiceImpl implements AllocationService {
 
     }
 
-    private void allocateBeerOrderLine(BeerOrderLineDto beerOrderLine) {
+    private int allocateBeerOrderLine(BeerOrderLineDto beerOrderLine) {
         List<BeerInventory> beerInventoryList = beerInventoryRepository.findAllByUpc(beerOrderLine.getUpc());
+        if (beerInventoryList.size() == 0 ) {
+            return 0;
+        }
 
-        beerInventoryList.forEach(beerInventory -> {
-            int inventory = Optional.ofNullable(beerInventory.getQuantityOnHand()).orElse(0);
-            int orderQty = Optional.ofNullable(beerOrderLine.getOrderQuantity()).orElse(0);
-            int allocatedQty = Optional.ofNullable(beerOrderLine.getQuantityAllocated()).orElse(0);
-            int qtyToAllocate = orderQty - allocatedQty;
+        BeerInventory beerInventory = beerInventoryList.get(0);
 
-            if (inventory >= qtyToAllocate) {
+        int inventory = Optional.ofNullable(beerInventory.getQuantityOnHand()).orElse(0);
+        int orderQty = Optional.ofNullable(beerOrderLine.getOrderQuantity()).orElse(0);
+        int alreadyAllocatedQty = Optional.ofNullable(beerOrderLine.getQuantityAllocated()).orElse(0);
+        int qtyToAllocate = orderQty - alreadyAllocatedQty;
 
-                // full allocation
-                inventory = inventory - qtyToAllocate;
-                beerOrderLine.setQuantityAllocated(orderQty);
-                beerInventory.setQuantityOnHand(inventory);
+        int allocatedQty = 0;
+        if (inventory >= qtyToAllocate) {
 
-                beerInventoryRepository.save(beerInventory);
+            // full allocation
+            inventory = inventory - qtyToAllocate;
+            beerOrderLine.setQuantityAllocated(orderQty);
+            beerInventory.setQuantityOnHand(inventory);
 
-            } else if (inventory > 0) {
+            beerInventoryRepository.save(beerInventory);
 
-                //partial allocation
-                beerOrderLine.setQuantityAllocated(allocatedQty + inventory);
-                beerInventory.setQuantityOnHand(0);
-            }
+            allocatedQty = qtyToAllocate;
 
-            if (beerInventory.getQuantityOnHand() == 0) {
-                beerInventoryRepository.delete(beerInventory);
-            }
-        });
+        } else if (inventory > 0) {
+
+            //partial allocation
+            beerOrderLine.setQuantityAllocated(alreadyAllocatedQty + inventory);
+            beerInventory.setQuantityOnHand(0);
+
+            allocatedQty = inventory;
+        }
+
+        if (beerInventory.getQuantityOnHand() == 0) {
+            beerInventoryRepository.delete(beerInventory);
+        }
+
+        return allocatedQty;
     }
 }
